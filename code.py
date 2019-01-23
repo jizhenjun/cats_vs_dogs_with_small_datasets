@@ -14,31 +14,34 @@ if config.whether_to_generator:
     zoom_range=0.2,
     horizontal_flip=True,
     fill_mode='nearest',
-    validation_split=0.2
+    validation_split=config.train_split_proportion
     )
 else:
     train_gen = ImageDataGenerator(rescale=1./255, validation_split=config.train_split_proportion)
-test_gen = ImageDataGenerator(rescale=1./255, validation_split=config.train_split_proportion)
+test_gen = ImageDataGenerator(rescale=1./255)
 train_generator = train_gen.flow_from_directory(
-    "train",
+    "data/train",
     config.image_size,
     shuffle=True,
     batch_size=32,
     class_mode = 'binary',
-    subset='training')
+    #subset='training'
+    )
 test_generator = test_gen.flow_from_directory(
-    "test",
+    "data/test",
     config.image_size,
     shuffle=False,
     batch_size=32,
-    class_mode=None)
-validation_generator = train_gen.flow_from_directory(
-    'train',
+    class_mode=None
+    )
+validation_generator = test_gen.flow_from_directory(
+    'data/validation',
     config.image_size,
     shuffle=True,
     batch_size=32,
     class_mode='binary',
-    subset='validation')
+    #subset='validation'
+    )
 
 def cnn_model():
     model = Sequential()
