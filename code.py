@@ -20,7 +20,7 @@ else:
     train_gen = ImageDataGenerator(rescale=1./255, validation_split=config.train_split_proportion)
 test_gen = ImageDataGenerator(rescale=1./255)
 train_generator = train_gen.flow_from_directory(
-    "data/train",
+    "data/train_after_crop",
     config.image_size,
     shuffle=True,
     batch_size=32,
@@ -135,7 +135,7 @@ def dnn_model():
     
     return model
 
-model = dnn_model()
+model = cnn_model()
 
 model.fit_generator(
     train_generator,
