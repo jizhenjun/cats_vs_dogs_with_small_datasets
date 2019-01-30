@@ -6,7 +6,7 @@ import config
 
 if config.whether_to_generator:
     train_gen = ImageDataGenerator(
-    rotation_range=40,
+    rotation_range=45,
     width_shift_range=0.2,
     height_shift_range=0.2,
     rescale=1./255,
@@ -23,22 +23,15 @@ train_generator = train_gen.flow_from_directory(
     "data/train_after_crop",
     config.image_size,
     shuffle=True,
-    batch_size=32,
+    batch_size=16,
     class_mode = 'binary',
     #subset='training'
-    )
-test_generator = test_gen.flow_from_directory(
-    "data/test",
-    config.image_size,
-    shuffle=False,
-    batch_size=32,
-    class_mode=None
     )
 validation_generator = test_gen.flow_from_directory(
     'data/validation',
     config.image_size,
     shuffle=True,
-    batch_size=32,
+    batch_size=16,
     class_mode='binary',
     #subset='validation'
     )
@@ -135,14 +128,24 @@ def dnn_model():
     
     return model
 
-model = cnn_model()
+model = dnn_model()
 
+from keras.callbacks import *
+
+tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
+                          write_graph=True, write_images=False)
+checkpointer = ModelCheckpoint(filepath="./checkpoint.hdf5", verbose=1)
 model.fit_generator(
     train_generator,
     steps_per_epoch=config.steps_per_epoch,
     verbose=1,
     epochs=config.epochs,
     validation_data=validation_generator,
+    #callbacks = [tensorboard, checkpointer],
     validation_steps = 1)
 # always save your weights after training or during training
-model.save_weights('first_try.h5')
+
+#hist = model.save('final_try.h5')
+
+#with open('log_sgd_big_32.txt','w') as f:
+#    f.write(str(hist.history))
