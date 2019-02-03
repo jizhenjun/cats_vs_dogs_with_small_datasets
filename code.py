@@ -2,8 +2,9 @@ from keras.models import *
 from keras.layers import *
 from keras.applications import *
 from keras.preprocessing.image import *
+import wechat_utils
 import config
-
+#wechat_utils.login()
 if config.whether_to_generator:
     train_gen = ImageDataGenerator(
     rotation_range=45,
@@ -13,14 +14,16 @@ if config.whether_to_generator:
     shear_range=0.2,
     zoom_range=0.2,
     horizontal_flip=True,
+    #zca_whitening=True,
+    #vertical_flip=False,
     fill_mode='nearest',
-    validation_split=config.train_split_proportion
+    #validation_split=config.train_split_proportion
     )
 else:
     train_gen = ImageDataGenerator(rescale=1./255, validation_split=config.train_split_proportion)
 test_gen = ImageDataGenerator(rescale=1./255)
 train_generator = train_gen.flow_from_directory(
-    "data/train_after_crop",
+    "data/train",
     config.image_size,
     shuffle=True,
     batch_size=16,
@@ -28,7 +31,7 @@ train_generator = train_gen.flow_from_directory(
     #subset='training'
     )
 validation_generator = test_gen.flow_from_directory(
-    'data/validation',
+    "data/validation",
     config.image_size,
     shuffle=True,
     batch_size=16,
@@ -135,17 +138,30 @@ from keras.callbacks import *
 tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
                           write_graph=True, write_images=False)
 checkpointer = ModelCheckpoint(filepath="./checkpoint.hdf5", verbose=1)
+
+def scheduler(epoch):
+    # 每隔100个epoch，学习率减小为原来的1/10
+    if epoch % 100 == 0 and epoch != 0:
+        lr = K.get_value(model.optimizer.lr)
+        K.set_value(model.optimizer.lr, lr * 0.1)
+        print("lr changed to {}".format(lr * 0.1))
+    return K.get_value(model.optimizer.lr)
+ 
+reduce_lr = LearningRateScheduler(scheduler)
+
 model.fit_generator(
     train_generator,
     steps_per_epoch=config.steps_per_epoch,
     verbose=1,
     epochs=config.epochs,
     validation_data=validation_generator,
-    #callbacks = [tensorboard, checkpointer],
-    validation_steps = 1)
+    callbacks = [tensorboard, checkpointer,
+    #wechat_utils.sendmessage(savelog=True,fexten='TEST')
+    ],
+    validation_steps = 25)
 # always save your weights after training or during training
 
-#hist = model.save('final_try.h5')
+hist = model.save('k_4_dnn_250_250.h5')
 
 #with open('log_sgd_big_32.txt','w') as f:
-#    f.write(str(hist.history))
+#    f.write(str(hist.History))
