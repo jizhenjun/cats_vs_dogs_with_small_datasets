@@ -7,4 +7,7 @@
 ## 模型说明
 k_dnn_250_250.h5 dnn模型，img_size为250*250，k折验证，验证集为800-999
 
+## 模型下载
+链接: https://pan.baidu.com/s/1hIJVAX082FM6WaVI25paUg 提取码: fd76
+
 ## 实验结果解读
