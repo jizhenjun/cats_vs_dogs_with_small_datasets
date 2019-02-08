@@ -9,38 +9,33 @@ import os
 test_gen = ImageDataGenerator(rescale=1./255,fill_mode='nearest')
 
 test_generator = test_gen.flow_from_directory(
-    "data/tmp",
+    "data/test",
     config.image_size,
     shuffle=False,
     batch_size=1,
     class_mode='binary',
     )
 
-model = load_model('first_try.h5')
+model = load_model('model/k_1_dnn_250_250.h5')
 
-pred = model.predict_generator(test_generator,steps = 200)
+pred = model.predict_generator(test_generator,steps = 12500)
+y=[]
+for i in range(len(pred)):
+	y.append(0)
+for i in range(len(pred)):
+	index = test_generator.filenames[i].split('.',1)[0]
+	index = index.split('\\',1)[1]
+	index = int(index)
+	pred[i] = min(pred[i],0.995)
+	pred[i] = max(pred[i],0.005)
+	y[index - 1] = pred[i]
+	if i % 100 == 0:
+		print(i)
 
-#np.savetxt('predict.csv', pred, delimiter=',')
+np.savetxt('predict.csv', y, delimiter=',')
 #pred = np.argmax(pred, axis=1)
+'''
 with open('result_of_dogs_in_validation.txt','w') as f:
     for i in range(len(pred)):
         f.write("%s %f\n" % (test_generator.filenames[i], pred[i]))
-#print(classification_report(testLabels.argmax(axis=1), predIdxs,
-#	target_names=lb.classes_))
-
-'''
-predicted_class_indices = np.argmax(pred, axis=1)
-filenames = test_generator.filenames
-labels = (train_generator.class_indices)
-label = dict((v,k) for k,v in labels.items())
-
-# 建立代码标签与真实标签的关系
-predictions = [label[i] for i in predicted_class_indices]
-
-#建立预测结果和文件名之间的关系
-filenames = test_generator.filenames
-for idx in range(len(filenames )):
-    print('predict  %d' % (int(predictions[idx])))
-    print('title    %s' % filenames[idx])
-    print('')
 '''

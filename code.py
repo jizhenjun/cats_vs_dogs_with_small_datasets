@@ -2,7 +2,7 @@ from keras.models import *
 from keras.layers import *
 from keras.applications import *
 from keras.preprocessing.image import *
-import wechat_utils
+#import wechat_utils
 import config
 #wechat_utils.login()
 if config.whether_to_generator:
@@ -20,13 +20,15 @@ if config.whether_to_generator:
     #validation_split=config.train_split_proportion
     )
 else:
-    train_gen = ImageDataGenerator(rescale=1./255, validation_split=config.train_split_proportion)
+    train_gen = ImageDataGenerator(rescale=1./255, 
+	#validation_split=config.train_split_proportion
+	)
 test_gen = ImageDataGenerator(rescale=1./255)
 train_generator = train_gen.flow_from_directory(
     "data/train",
     config.image_size,
     shuffle=True,
-    batch_size=16,
+    batch_size=32,
     class_mode = 'binary',
     #subset='training'
     )
@@ -54,7 +56,7 @@ def cnn_model():
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
-    model.add(Dense(64))
+    model.add(Dense(128))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(Dense(1))
@@ -140,14 +142,23 @@ tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
 checkpointer = ModelCheckpoint(filepath="./checkpoint.hdf5", verbose=1)
 
 def scheduler(epoch):
+	if epoch == 0:
+		lr = K.get_value(model.optimizer.lr)
+		K.set_value(model.optimizer.lr, lr * 10)
+		print("lr changed to {}".format(lr * 10))
+	return K.get_value(model.optimizer.lr)
+	'''
     # 每隔100个epoch，学习率减小为原来的1/10
     if epoch % 100 == 0 and epoch != 0:
         lr = K.get_value(model.optimizer.lr)
         K.set_value(model.optimizer.lr, lr * 0.1)
         print("lr changed to {}".format(lr * 0.1))
     return K.get_value(model.optimizer.lr)
- 
+	'''
+
 reduce_lr = LearningRateScheduler(scheduler)
+
+
 
 model.fit_generator(
     train_generator,
@@ -155,13 +166,15 @@ model.fit_generator(
     verbose=1,
     epochs=config.epochs,
     validation_data=validation_generator,
-    callbacks = [tensorboard, checkpointer,
+    callbacks = [tensorboard, checkpointer #, reduce_lr
     #wechat_utils.sendmessage(savelog=True,fexten='TEST')
     ],
     validation_steps = 25)
 # always save your weights after training or during training
 
-hist = model.save('k_4_dnn_250_250.h5')
+hist = model.save('test.h5')
 
 #with open('log_sgd_big_32.txt','w') as f:
 #    f.write(str(hist.History))
+
+
