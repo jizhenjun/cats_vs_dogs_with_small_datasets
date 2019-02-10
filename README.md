@@ -1,11 +1,15 @@
 # cats_vs_dogs
 
 数据集：kaggle 猫狗大战
-训练集：https://www.kaggle.com/jizhenjun/cats-vs-dogs-with-small-datasets
-验证集：https://www.kaggle.com/c/dogs-vs-cats/data 中训练集各个类别的第801-1000张图片，共四百张
+训练集：https://www.kaggle.com/jizhenjun/cats-vs-dogs-with-small-datasets train_after_crop文件夹
+验证集：https://www.kaggle.com/c/dogs-vs-cats/data validation_with_group文件夹
 
 ## 模型说明
-k_dnn_250_250.h5 dnn模型，img_size为250*250，k折验证，验证集为800-999
+k_1_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
+k_2_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
+k_3_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
+k_4_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
+k_5_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
 
 ## 模型下载
 链接: https://pan.baidu.com/s/1hIJVAX082FM6WaVI25paUg 提取码: fd76
