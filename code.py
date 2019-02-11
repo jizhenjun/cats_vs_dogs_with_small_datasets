@@ -7,12 +7,12 @@ import config
 #wechat_utils.login()
 if config.whether_to_generator:
     train_gen = ImageDataGenerator(
-    rotation_range=45,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
+    rotation_range=15,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
     rescale=1./255,
-    shear_range=0.2,
-    zoom_range=0.2,
+    shear_range=0.1,
+    zoom_range=0.1,
     horizontal_flip=True,
     #zca_whitening=True,
     #vertical_flip=False,
@@ -28,7 +28,7 @@ train_generator = train_gen.flow_from_directory(
     "data/train",
     config.image_size,
     shuffle=True,
-    batch_size=32,
+    batch_size=16,
     class_mode = 'binary',
     #subset='training'
     )
@@ -133,7 +133,47 @@ def dnn_model():
     
     return model
 
-model = dnn_model()
+
+def batch_dot(cnn_ab):
+    return K.batch_dot(cnn_ab[0], cnn_ab[1], axes=[1, 1])
+ 
+def sign_sqrt(x):
+    return K.sign(x) * K.sqrt(K.abs(x) + 1e-10)
+ 
+def l2_norm(x):
+    return K.l2_normalize(x, axis=-1)
+
+
+def bilinear_cnn_model():
+    model_dnn = load_model('models/k_1_dnn_250_250.h5')
+
+    #for layer in model_dnn.layers:
+    #    layer.trainable = False
+
+    cnn_out_a = model_dnn.layers[-4].output
+    cnn_out_shape = model_dnn.layers[-4].output_shape
+    #print(cnn_out_shape)
+    cnn_out_a = Reshape([cnn_out_shape[1] * cnn_out_shape[2], cnn_out_shape[3]])(cnn_out_a)
+    cnn_out_b = cnn_out_a
+    cnn_out_dot = Lambda(batch_dot)([cnn_out_a, cnn_out_b])
+    cnn_out_dot = Reshape([cnn_out_shape[-1]*cnn_out_shape[-1]])(cnn_out_dot)
+
+    sign_sqrt_out = Lambda(sign_sqrt)(cnn_out_dot)
+    l2_norm_out = Lambda(l2_norm)(sign_sqrt_out)
+
+    #flatten = Flatten()(l2_norm_out)
+    #dropout_layer = Dropout(0.5)(flatten)
+    
+    output_layer = Dense(1, activation='sigmoid')(l2_norm_out)
+    model = Model(model_dnn.input, output_layer)
+    model.compile(loss='binary_crossentropy', optimizer='adam',
+                  metrics=['accuracy'])
+    model.summary()
+    return model
+
+model = bilinear_cnn_model()
+
+#model.summary()
 
 from keras.callbacks import *
 
@@ -142,10 +182,10 @@ tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
 checkpointer = ModelCheckpoint(filepath="./checkpoint.hdf5", verbose=1)
 
 def scheduler(epoch):
-	if epoch == 0:
+	if epoch == 3:
 		lr = K.get_value(model.optimizer.lr)
-		K.set_value(model.optimizer.lr, lr * 10)
-		print("lr changed to {}".format(lr * 10))
+		K.set_value(model.optimizer.lr, lr * 0.1)
+		print("lr changed to {}".format(lr * 0.1))
 	return K.get_value(model.optimizer.lr)
 	'''
     # 每隔100个epoch，学习率减小为原来的1/10
@@ -166,13 +206,13 @@ model.fit_generator(
     verbose=1,
     epochs=config.epochs,
     validation_data=validation_generator,
-    callbacks = [tensorboard, checkpointer #, reduce_lr
+    callbacks = [tensorboard, checkpointer , reduce_lr
     #wechat_utils.sendmessage(savelog=True,fexten='TEST')
     ],
     validation_steps = 25)
 # always save your weights after training or during training
 
-hist = model.save('test.h5')
+hist = model.save('models/test.h5')
 
 #with open('log_sgd_big_32.txt','w') as f:
 #    f.write(str(hist.History))
