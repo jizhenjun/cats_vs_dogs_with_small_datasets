@@ -1,8 +1,9 @@
 # cats_vs_dogs
 
 数据集：kaggle 猫狗大战
-训练集：https://www.kaggle.com/jizhenjun/cats-vs-dogs-with-small-datasets train_after_crop文件夹
-验证集：https://www.kaggle.com/c/dogs-vs-cats/data validation_with_group文件夹
+训练集：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets train_after_crop.zip
+验证集：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets validation_with_group.zip
+模型下载：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets models.zip
 
 ## 模型说明
 k_1_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
@@ -48,7 +49,7 @@ k_5_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
 验证集的准确度则基本在90%以上
 
 ### 模型融合
-五折模型各自的loss分别为0.26157, 0.23631, 0.29418, 0.26419, 0.25655
+五折模型各自的loss分别为0.26157, 0.29139, 0.29418, 0.26419, 0.25655
 融合之后的模型的提交loss为
 
 ## 实验结论
