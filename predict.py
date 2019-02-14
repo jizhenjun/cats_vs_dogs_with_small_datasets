@@ -32,8 +32,6 @@ for i in range(len(pred)):
 	pred[i] = min(pred[i],0.995)
 	pred[i] = max(pred[i],0.005)
 	y[index - 1] = pred[i]
-	if i % 1000 == 0:
-		print(i)
 
 np.savetxt('results/result_of_test.csv', y, delimiter=',')
 #pred = np.argmax(pred, axis=1)

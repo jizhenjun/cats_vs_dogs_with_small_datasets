@@ -145,7 +145,7 @@ def l2_norm(x):
 
 
 def bilinear_cnn_model():
-    model_dnn = load_model('models/k_1_dnn_250_250.h5')
+    model_dnn = load_model('models/k_3_dnn_250_250.h5')
 
     #for layer in model_dnn.layers:
     #    layer.trainable = False
@@ -182,7 +182,7 @@ tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
 checkpointer = ModelCheckpoint(filepath="./checkpoint.hdf5", verbose=1)
 
 def scheduler(epoch):
-	if epoch == 3:
+	if epoch == 0:
 		lr = K.get_value(model.optimizer.lr)
 		K.set_value(model.optimizer.lr, lr * 0.1)
 		print("lr changed to {}".format(lr * 0.1))
@@ -206,7 +206,7 @@ model.fit_generator(
     verbose=1,
     epochs=config.epochs,
     validation_data=validation_generator,
-    callbacks = [tensorboard, checkpointer , reduce_lr
+    callbacks = [tensorboard, checkpointer# , reduce_lr
     #wechat_utils.sendmessage(savelog=True,fexten='TEST')
     ],
     validation_steps = 25)
