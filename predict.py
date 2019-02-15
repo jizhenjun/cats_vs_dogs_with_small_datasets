@@ -16,7 +16,9 @@ test_generator = test_gen.flow_from_directory(
     class_mode='binary',
     )
 
-model = load_model('models/test.h5')
+#for j in range(5):
+j = 1
+model = load_model('models/k_' + str(j + 1) + '_dnn_bilinear_250_250.h5')
 
 pred = model.predict_generator(test_generator,steps = 12500)
 y=[]
@@ -33,7 +35,7 @@ for i in range(len(pred)):
 	pred[i] = max(pred[i],0.005)
 	y[index - 1] = pred[i]
 
-np.savetxt('results/result_of_test.csv', y, delimiter=',')
+np.savetxt('results/result_of_test' + '.csv', y, delimiter=',')
 #pred = np.argmax(pred, axis=1)
 '''
 with open('result_of_dogs_in_validation.txt','w') as f:
