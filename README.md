@@ -1,16 +1,16 @@
 # cats_vs_dogs
 
 数据集：kaggle 猫狗大战
-训练集：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets train_after_crop.zip
-验证集：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets validation_with_group.zip
-模型下载：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets models.zip
+训练集：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets train_after_crop.zip  
+验证集：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets validation_with_group.zip  
+模型下载：https://www.kaggle.com/sbgyshds/cat-vs-dogs-with-small-datasets models.zip  
 
 ## 模型说明
-k_1_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
-k_2_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
-k_3_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
-k_4_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
-k_5_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证
+k_1_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证  
+k_2_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证  
+k_3_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证  
+k_4_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证  
+k_5_dnn_250_250.h5 dnn模型，img_size为250*250，5折验证  
 
 ## 模型下载
 链接: https://pan.baidu.com/s/1hIJVAX082FM6WaVI25paUg 提取码: fd76
